@@ -21,6 +21,11 @@ app.use("/api/table", require("./routes/tableRoutes"));
 app.use("/api/wastage", require("./routes/wastageRoutes"));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
