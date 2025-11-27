@@ -45,12 +45,10 @@ const KOTSchema = new mongoose.Schema({
   estimatedTime: Number, // in minutes
   actualTime: Number, // in minutes
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    type: String
   },
   assignedChef: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    type: String
   },
   itemStatuses: [{
     itemIndex: Number,

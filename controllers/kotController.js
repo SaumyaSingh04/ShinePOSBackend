@@ -103,11 +103,12 @@ exports.getAllKOTs = async (req, res) => {
     
     const kots = await KOT.find(filter)
       .populate('items.itemId', 'name')
-      .populate('createdBy', 'username')
-      .populate('assignedChef', 'username')
-      .sort({ createdAt: -1 });
+      .select('kotNumber tableNo items status priority estimatedTime createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+      
     const kotsWithDisplayNumber = kots.map(kot => ({
-      ...kot.toObject(),
+      ...kot,
       displayNumber: getKOTDisplayNumber(kot.kotNumber)
     }));
     res.json(kotsWithDisplayNumber);
@@ -126,9 +127,7 @@ exports.updateKOTStatus = async (req, res) => {
     if (assignedChef) updates.assignedChef = assignedChef;
     
     const kot = await KOT.findByIdAndUpdate(req.params.id, updates, { new: true })
-      .populate('items.itemId', 'name')
-      .populate('createdBy', 'username')
-      .populate('assignedChef', 'username');
+      .populate('items.itemId', 'name');
     if (!kot) return res.status(404).json({ error: 'KOT not found' });
     
     // 🔥 WebSocket: Emit KOT status update
@@ -161,7 +160,7 @@ exports.updateKOTStatus = async (req, res) => {
       
       if (order && order.createdBy) {
         const notification = new Notification({
-          recipient: order.createdBy._id,
+          recipient: order.createdBy,
           message: `Order for Table ${kot.tableNo} is ready for serving`,
           type: 'order_ready',
           orderId: kot.orderId,
@@ -186,9 +185,7 @@ exports.getKOTById = async (req, res) => {
   try {
     const kot = await KOT.findById(req.params.id)
       .populate('orderId')
-      .populate('items.itemId', 'name Price')
-      .populate('createdBy', 'username')
-      .populate('assignedChef', 'username');
+      .populate('items.itemId', 'name Price');
     if (!kot) return res.status(404).json({ error: 'KOT not found' });
     res.json({
       ...kot.toObject(),
@@ -258,9 +255,7 @@ exports.updateItemStatuses = async (req, res) => {
 exports.updateKOT = async (req, res) => {
   try {
     const kot = await KOT.findByIdAndUpdate(req.params.id, req.body, { new: true })
-      .populate('items.itemId', 'name')
-      .populate('createdBy', 'username')
-      .populate('assignedChef', 'username');
+      .populate('items.itemId', 'name');
     if (!kot) return res.status(404).json({ error: 'KOT not found' });
     res.json({
       ...kot.toObject(),

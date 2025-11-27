@@ -6,24 +6,20 @@ exports.sendOrderReadyNotification = async (req, res) => {
   try {
     const { orderId, kotId, tableNo, message } = req.body;
 
-    // Find the order to get the staff who created it
-    const order = await RestaurantOrder.findById(orderId).populate('createdBy');
-    if (!order) {
-      return res.status(404).json({ error: 'Order not found' });
-    }
+    const [order] = await Promise.all([
+      RestaurantOrder.findById(orderId, 'createdBy').lean(),
+      Notification.create({
+        recipient: req.body.recipient || 'staff',
+        message: message || `Order for Table ${tableNo} is ready for serving`,
+        type: 'order_ready',
+        orderId,
+        kotId,
+        tableNo
+      })
+    ]);
 
-    // Create notification for the staff who created the order
-    const notification = new Notification({
-      recipient: order.createdBy._id,
-      message: message || `Order for Table ${tableNo} is ready for serving`,
-      type: 'order_ready',
-      orderId,
-      kotId,
-      tableNo
-    });
-
-    await notification.save();
-    res.json({ message: 'Notification sent successfully' });
+    if (!order) return res.status(404).json({ error: 'Order not found' });
+    res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -32,13 +28,13 @@ exports.sendOrderReadyNotification = async (req, res) => {
 // Get notifications for current user
 exports.getMyNotifications = async (req, res) => {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ error: 'User not authenticated' });
-    }
+    const recipient = req.user?.id || req.query.recipient || 'staff';
     
-    const notifications = await Notification.find({ recipient: req.user.id })
+    const notifications = await Notification.find({ recipient })
+      .select('message type tableNo isRead createdAt')
       .sort({ createdAt: -1 })
-      .limit(50);
+      .limit(50)
+      .lean();
     
     res.json(notifications);
   } catch (error) {
@@ -49,11 +45,12 @@ exports.getMyNotifications = async (req, res) => {
 // Mark notification as read
 exports.markAsRead = async (req, res) => {
   try {
-    await Notification.findOneAndUpdate(
-      { _id: req.params.id, recipient: req.user.id }, 
+    const recipient = req.user?.id || req.body.recipient || 'staff';
+    await Notification.updateOne(
+      { _id: req.params.id, recipient }, 
       { isRead: true }
     );
-    res.json({ message: 'Notification marked as read' });
+    res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

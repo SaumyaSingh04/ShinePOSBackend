@@ -9,7 +9,6 @@ const {
   getWastageStats
 } = require("../controllers/wastageController");
 
-
 // Routes
 router.post("/", createWastage);
 router.get("/", getAllWastage);

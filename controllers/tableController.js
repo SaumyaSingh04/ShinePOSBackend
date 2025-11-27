@@ -10,15 +10,12 @@ exports.getAllTables = async (req, res) => {
     if (location) filter.location = location;
     if (status) filter.status = status;
     
-    const tables = await Table.find(filter).sort({ tableNumber: 1 });
+    const tables = await Table.find(filter)
+      .select('tableNumber capacity location status isActive')
+      .sort({ tableNumber: 1 })
+      .lean();
     
-    // Ensure all tables have status field
-    const tablesWithStatus = tables.map(table => ({
-      ...table.toObject(),
-      status: table.status || 'available'
-    }));
-    
-    res.json({ success: true, tables: tablesWithStatus });
+    res.json({ success: true, tables });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

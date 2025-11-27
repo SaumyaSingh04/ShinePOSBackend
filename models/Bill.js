@@ -68,9 +68,7 @@ const BillSchema = new mongoose.Schema({
     default: 0
   },
   cashierId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    type: String
   }
 }, { timestamps: true });
 

@@ -52,16 +52,14 @@ const RestaurantOrderSchema = new mongoose.Schema({
     default: false
   },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    type: String
   },
   transferHistory: [{
     fromTable: String,
     toTable: String,
     reason: String,
     transferredBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      type: String
     },
     transferredAt: {
       type: Date,
@@ -73,8 +71,7 @@ const RestaurantOrderSchema = new mongoose.Schema({
     method: { type: String, required: true },
     transactionId: String,
     processedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      type: String
     },
     processedAt: {
       type: Date,

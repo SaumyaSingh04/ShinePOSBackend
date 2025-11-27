@@ -54,7 +54,7 @@ exports.createBill = async (req, res) => {
       advancePayment: advanceAmount,
       remainingAmount,
       paymentMethod,
-      cashierId: req.user?.id || req.user?._id
+      cashierId: req.user?.id || req.user?._id || 'system'
     });
     
     await bill.save();
@@ -198,9 +198,10 @@ exports.getAllBills = async (req, res) => {
     if (paymentMethod) filter.paymentMethod = paymentMethod;
     
     const bills = await Bill.find(filter)
-      .populate('orderId', 'staffName phoneNumber')
-      .populate('cashierId', 'username')
-      .sort({ createdAt: -1 });
+      .populate('orderId', 'staffName customerName tableNo')
+      .select('billNumber tableNo totalAmount paymentStatus paymentMethod createdAt orderId')
+      .sort({ createdAt: -1 })
+      .lean();
     res.json(bills);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -211,8 +212,7 @@ exports.getAllBills = async (req, res) => {
 exports.getBillById = async (req, res) => {
   try {
     const bill = await Bill.findById(req.params.id)
-      .populate('orderId')
-      .populate('cashierId', 'username');
+      .populate('orderId');
     if (!bill) return res.status(404).json({ error: 'Bill not found' });
     res.json(bill);
   } catch (error) {
@@ -225,8 +225,7 @@ exports.getBillDetails = async (req, res) => {
   try {
     const KOT = require('../models/KOT');
     const bill = await Bill.findById(req.params.id)
-      .populate('orderId')
-      .populate('cashierId', 'username');
+      .populate('orderId');
     
     if (!bill) return res.status(404).json({ error: 'Bill not found' });
     
@@ -257,8 +256,7 @@ exports.getBillByOrderId = async (req, res) => {
   try {
     const KOT = require('../models/KOT');
     const bill = await Bill.findOne({ orderId: req.params.orderId })
-      .populate('orderId')
-      .populate('cashierId', 'username');
+      .populate('orderId');
     
     if (!bill) return res.status(404).json({ error: 'Bill not found' });
     
@@ -334,8 +332,7 @@ exports.updateBillStatus = async (req, res) => {
 exports.getBillWithAdvanceDetails = async (req, res) => {
   try {
     const bill = await Bill.findById(req.params.id)
-      .populate('orderId')
-      .populate('cashierId', 'username');
+      .populate('orderId');
     
     if (!bill) return res.status(404).json({ error: 'Bill not found' });
     

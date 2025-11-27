@@ -142,8 +142,7 @@ exports.getAllReservations = async (req, res) => {
       };
     }
     const reservations = await RestaurantReservation.find(filter)
-      .populate("createdBy", "username")
-      .sort({ reservationDate: 1, reservationTime: 1 });
+      .sort({ reservationDate: 1, reservationTimeIn: 1 });
     res.json(reservations);
   } catch (error) {
     console.error("Error fetching reservations:", error);
@@ -153,8 +152,7 @@ exports.getAllReservations = async (req, res) => {
 
 exports.getReservationById = async (req, res) => {
   try {
-    const reservation = await RestaurantReservation.findById(req.params.id)
-      .populate('createdBy', 'username');
+    const reservation = await RestaurantReservation.findById(req.params.id);
     if (!reservation) return res.status(404).json({ error: 'Reservation not found' });
     res.json(reservation);
   } catch (error) {
