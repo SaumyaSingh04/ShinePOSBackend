@@ -1,4 +1,4 @@
-const RestaurantReservation = require("../models/restaurantModels/RestaurantReservation");
+const RestaurantReservation = require("../../models/restaurantModels/RestaurantReservation");
 
 const generateReservationNumber = async () => {
   const today = new Date();
@@ -214,3 +214,4 @@ exports.deleteReservation = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+

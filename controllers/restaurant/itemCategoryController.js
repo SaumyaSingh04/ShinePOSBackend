@@ -1,4 +1,4 @@
-const ItemCategory = require('../models/restaurantModels/ItemCategory');
+const ItemCategory = require('../../models/restaurantModels/ItemCategory');
 
 // Create a new item category
 exports.createItemCategory = async (req, res) => {
@@ -59,3 +59,4 @@ exports.deleteItemCategory = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+

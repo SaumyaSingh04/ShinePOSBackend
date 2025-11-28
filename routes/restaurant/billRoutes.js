@@ -1,11 +1,7 @@
 const express = require('express');
-const billController = require('../controllers/billController');
-const { auth, authorize } = require('../middleware/auth');
+const billController = require('../../controllers/restaurant/billController');
 
 const router = express.Router();
-
-// Apply authentication to all bill routes
-router.use(auth);
 
 router.post('/create', billController.createBill);
 router.patch('/:id/payment', billController.processPayment);

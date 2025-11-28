@@ -1,6 +1,6 @@
-const Bill = require('../models/restaurantModels/Bill');
-const RestaurantOrder = require('../models/restaurantModels/RestaurantOrder');
-const RestaurantReservation = require('../models/restaurantModels/RestaurantReservation');
+const Bill = require('../../models/restaurantModels/Bill');
+const RestaurantOrder = require('../../models/restaurantModels/RestaurantOrder');
+const RestaurantReservation = require('../../models/restaurantModels/RestaurantReservation');
 
 // Generate bill number
 const generateBillNumber = async () => {
@@ -100,7 +100,7 @@ exports.processPayment = async (req, res) => {
       
       // Update table status to available when payment is completed
       if (order) {
-        const Table = require('../models/restaurantModels/Table');
+        const Table = require('../../models/restaurantModels/Table');
         try {
           const table = await Table.findOneAndUpdate(
             { tableNumber: order.tableNo },
@@ -160,7 +160,7 @@ exports.processSplitPayment = async (req, res) => {
       
       // Update table status to available when payment is completed
       if (order) {
-        const Table = require('../models/restaurantModels/Table');
+        const Table = require('../../models/restaurantModels/Table');
         try {
           const table = await Table.findOneAndUpdate(
             { tableNumber: order.tableNo },
@@ -223,7 +223,7 @@ exports.getBillById = async (req, res) => {
 // Get bill details with items from all KOTs
 exports.getBillDetails = async (req, res) => {
   try {
-    const KOT = require('../models/restaurantModels/KOT');
+    const KOT = require('../../models/restaurantModels/KOT');
     const bill = await Bill.findById(req.params.id)
       .populate('orderId');
     
@@ -254,7 +254,7 @@ exports.getBillDetails = async (req, res) => {
 // Get bill by order ID with items from all KOTs
 exports.getBillByOrderId = async (req, res) => {
   try {
-    const KOT = require('../models/restaurantModels/KOT');
+    const KOT = require('../../models/restaurantModels/KOT');
     const bill = await Bill.findOne({ orderId: req.params.orderId })
       .populate('orderId');
     
@@ -299,7 +299,7 @@ exports.updateBillStatus = async (req, res) => {
       
       // Update table status to available when payment is completed
       if (order) {
-        const Table = require('../models/restaurantModels/Table');
+        const Table = require('../../models/restaurantModels/Table');
         try {
           const table = await Table.findOneAndUpdate(
             { tableNumber: order.tableNo },

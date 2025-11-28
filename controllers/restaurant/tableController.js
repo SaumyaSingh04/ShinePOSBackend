@@ -1,5 +1,5 @@
-const Table = require('../models/restaurantModels/Table');
-const RestaurantOrder = require('../models/restaurantModels/RestaurantOrder');
+const Table = require('../../models/restaurantModels/Table');
+const RestaurantOrder = require('../../models/restaurantModels/RestaurantOrder');
 
 // Get all tables
 exports.getAllTables = async (req, res) => {
@@ -155,3 +155,4 @@ exports.deleteTable = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+

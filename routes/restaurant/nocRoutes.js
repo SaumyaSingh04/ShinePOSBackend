@@ -6,7 +6,7 @@ const {
   getNOCById, 
   updateNOC, 
   deleteNOC, 
-} = require('../controllers/nocController');
+} = require('../../controllers/restaurant/nocController');
 
 // Simple NOC routes
 router.post('/create', createAndApplyNOC);

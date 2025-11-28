@@ -7,7 +7,7 @@ const {
   updateWastage,
   deleteWastage,
   getWastageStats
-} = require("../controllers/wastageController");
+} = require("../../controllers/restaurant/wastageController");
 
 // Routes
 router.post("/", createWastage);
