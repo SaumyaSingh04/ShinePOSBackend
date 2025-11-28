@@ -7,6 +7,7 @@ connectDB();
 
 app.use(express.json());
 
+app.use("/api/auth", require("./routes/authRoutes/authRoutes"));
 app.use("/api/bill", require("./routes/restaurant/billRoutes"));
 app.use("/api/item", require("./routes/restaurant/itemRoutes"));
 app.use("/api/item-category", require("./routes/restaurant/itemCategoryRoutes"));
