@@ -24,7 +24,7 @@ const RestaurantRegistrationSchema = new mongoose.Schema({
 
   status: { 
     type: String, 
-    enum: ['pending', 'submitted'], 
+    enum: ['pending', 'submitted', 'verified'], 
     default: 'pending' 
   }
 }, { timestamps: true });

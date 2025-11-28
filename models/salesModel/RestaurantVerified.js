@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const RestaurantVerifiedSchema = new mongoose.Schema({
+  restaurantRegId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "RestaurantRegistration",
+    required: true
+  },
   restaurantName: { type: String, required: true },
   ownerName: { type: String, required: true },
   phone: { type: String, required: true },
