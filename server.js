@@ -13,7 +13,6 @@ app.use("/api/item-category", require("./routes/itemCategoryRoutes"));
 app.use("/api/kot", require("./routes/kotRoutes"));
 app.use("/api/noc", require("./routes/nocRoutes"));
 app.use("/api/notification", require("./routes/notificationRoutes"));
-app.use("/api/category", require("./routes/restaurantCategoryRoutes"));
 app.use("/api/invoice", require("./routes/restaurantInvoiceRoutes"));
 app.use("/api/order", require("./routes/restaurantOrderRoutes"));
 app.use("/api/reservation", require("./routes/restaurantReservationRoutes"));
