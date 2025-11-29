@@ -3,13 +3,17 @@ const router = express.Router();
 const controller = require('../../controllers/salesController/restaurantRegistrationController');
 const { auth, authorize } = require('../../middleware/auth');
 
-// Sales Person APIs
-router.post('/create', auth, authorize('ADMIN'), controller.createRestaurantRegistration);
-router.get('/all', auth, authorize('ADMIN'), controller.getAllRestaurantRegistrations);
-router.get('/my-registrations', auth, authorize('SALES'), controller.getMyRegistrations);
-router.get('/:id', auth, authorize('SALES'), controller.getRestaurantRegistrationById);
-router.put('/update/:id', auth, authorize('SALES'), controller.updateRestaurantRegistration);
-router.put('/submit/:id', auth, authorize('SALES'), controller.submitRestaurantRegistration);
-router.delete('/delete/:id', auth, authorize('SALES'), controller.deleteRestaurantRegistration);
+// Sales Person APIs - Require Authentication + Sales Role
+router.post('/create', auth, authorize('SALES', 'ADMIN'), controller.createRestaurantRegistration);
+router.get('/my-registrations', auth, authorize('SALES', 'ADMIN'), controller.getMyRegistrations);
+router.put('/update/:id', auth, authorize('SALES', 'ADMIN'), controller.updateRestaurantRegistration);
+router.put('/submit/:id', auth, authorize('SALES', 'ADMIN'), controller.submitRestaurantRegistration);
+router.delete('/delete/:id', auth, authorize('SALES', 'ADMIN'), controller.deleteRestaurantRegistration);
+
+// Admin/Support APIs - Require Admin/Support Role
+router.get('/all', auth, authorize('ADMIN', 'SUPPORT'), controller.getAllRestaurantRegistrations);
+
+// Public APIs - No Authentication Required
+router.get('/:id', controller.getRestaurantRegistrationById);
 
 module.exports = router;
