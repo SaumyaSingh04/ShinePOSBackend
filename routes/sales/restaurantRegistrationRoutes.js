@@ -12,8 +12,6 @@ router.delete('/delete/:id', auth, authorize('SALES', 'ADMIN'), controller.delet
 
 // Admin/Support APIs - Require Admin/Support Role
 router.get('/all', auth, authorize('ADMIN', 'SUPPORT'), controller.getAllRestaurantRegistrations);
-
-// Public APIs - No Authentication Required
-router.get('/:id', controller.getRestaurantRegistrationById);
+router.get('/:id', auth, authorize('SALES', 'ADMIN', 'SUPPORT'), controller.getRestaurantRegistrationById);
 
 module.exports = router;
