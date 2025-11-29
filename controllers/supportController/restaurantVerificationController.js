@@ -1,5 +1,5 @@
 const RestaurantRegistration = require('../../models/salesModel/RestaurantRegistration');
-const RestaurantVerified = require('../../models/salesModel/RestaurantVerified');
+const RestaurantVerified = require('../../models/supportModel/RestaurantVerified');
 
 // Verify Restaurant (submitted → verified)
 exports.verifyRestaurant = async (req, res) => {
