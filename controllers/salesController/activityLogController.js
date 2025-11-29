@@ -1,54 +1,146 @@
 const ActivityLog = require('../../models/salesModel/ActivityLog');
+const SalesPerson = require('../../models/salesModel/SalesPerson');
 
-// Create ActivityLog
-exports.createActivityLog = async (req, res) => {
+// Sales Person - Log Location (Every 5 minutes)
+exports.logLocation = async (req, res) => {
   try {
-    const activityLog = new ActivityLog(req.body);
+    const { latitude, longitude, address } = req.body;
+    
+    // Find sales person by user ID
+    const salesPerson = await SalesPerson.findOne({ userId: req.user._id });
+    if (!salesPerson) {
+      return res.status(404).json({ error: 'SalesPerson profile not found' });
+    }
+    
+    const activityLog = new ActivityLog({
+      salesPersonId: salesPerson._id,
+      location: {
+        latitude,
+        longitude,
+        address
+      }
+    });
+    
     await activityLog.save();
-    res.status(201).json(activityLog);
+    res.status(201).json({ message: 'Location logged successfully', activityLog });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// Get all ActivityLogs
+// Admin - Get All Activity Logs
 exports.getAllActivityLogs = async (req, res) => {
   try {
-    const activityLogs = await ActivityLog.find().populate('salesPersonId');
+    const { salesPersonId, date, limit = 50 } = req.query;
+    const filter = {};
+    
+    if (salesPersonId) filter.salesPersonId = salesPersonId;
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+      endDate.setDate(endDate.getDate() + 1);
+      filter.timestamp = { $gte: startDate, $lt: endDate };
+    }
+    
+    const activityLogs = await ActivityLog.find(filter)
+      .populate('salesPersonId', 'name employeeId')
+      .sort({ timestamp: -1 })
+      .limit(parseInt(limit));
+      
     res.json(activityLogs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Get ActivityLog by ID
-exports.getActivityLogById = async (req, res) => {
+// Admin - Get Sales Person Activity Logs
+exports.getSalesPersonActivityLogs = async (req, res) => {
   try {
-    const activityLog = await ActivityLog.findById(req.params.id).populate('salesPersonId');
-    if (!activityLog) return res.status(404).json({ error: 'Activity log not found' });
-    res.json(activityLog);
+    const { salesPersonId } = req.params;
+    const { date, limit = 50 } = req.query;
+    const filter = { salesPersonId };
+    
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+      endDate.setDate(endDate.getDate() + 1);
+      filter.timestamp = { $gte: startDate, $lt: endDate };
+    }
+    
+    const activityLogs = await ActivityLog.find(filter)
+      .populate('salesPersonId', 'name employeeId')
+      .sort({ timestamp: -1 })
+      .limit(parseInt(limit));
+      
+    res.json(activityLogs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-// Update ActivityLog
-exports.updateActivityLog = async (req, res) => {
+// Sales Person - Get My Activity Logs
+exports.getMyActivityLogs = async (req, res) => {
   try {
-    const activityLog = await ActivityLog.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!activityLog) return res.status(404).json({ error: 'Activity log not found' });
-    res.json(activityLog);
+    const { date, limit = 50 } = req.query;
+    
+    // Find sales person by user ID
+    const salesPerson = await SalesPerson.findOne({ userId: req.user._id });
+    if (!salesPerson) {
+      return res.status(404).json({ error: 'SalesPerson profile not found' });
+    }
+    
+    const filter = { salesPersonId: salesPerson._id };
+    
+    if (date) {
+      const startDate = new Date(date);
+      const endDate = new Date(date);
+      endDate.setDate(endDate.getDate() + 1);
+      filter.timestamp = { $gte: startDate, $lt: endDate };
+    }
+    
+    const activityLogs = await ActivityLog.find(filter)
+      .sort({ timestamp: -1 })
+      .limit(parseInt(limit));
+      
+    res.json(activityLogs);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Delete ActivityLog
-exports.deleteActivityLog = async (req, res) => {
+// Admin - Get Latest Locations of All Sales Persons
+exports.getLatestLocations = async (req, res) => {
   try {
-    const activityLog = await ActivityLog.findByIdAndDelete(req.params.id);
-    if (!activityLog) return res.status(404).json({ error: 'Activity log not found' });
-    res.json({ message: 'Activity log deleted successfully' });
+    const latestLogs = await ActivityLog.aggregate([
+      {
+        $sort: { salesPersonId: 1, timestamp: -1 }
+      },
+      {
+        $group: {
+          _id: '$salesPersonId',
+          latestLog: { $first: '$$ROOT' }
+        }
+      },
+      {
+        $replaceRoot: { newRoot: '$latestLog' }
+      },
+      {
+        $lookup: {
+          from: 'salespersons',
+          localField: 'salesPersonId',
+          foreignField: '_id',
+          as: 'salesPerson'
+        }
+      },
+      {
+        $unwind: '$salesPerson'
+      },
+      {
+        $sort: { timestamp: -1 }
+      }
+    ]);
+    
+    res.json(latestLogs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -21,6 +21,7 @@ app.use("/api/table", require("./routes/restaurant/tableRoutes"));
 app.use("/api/wastage", require("./routes/restaurant/wastageRoutes"));
 app.use("/api/restaurant-registration", require("./routes/sales/restaurantRegistrationRoutes"));
 app.use("/api/sales-person", require("./routes/sales/salesPersonRoutes"));
+app.use("/api/activity-log", require("./routes/sales/activityLogRoutes"));
 
 app.get('/', (req, res) => {
   res.json({ message: 'ShinePOS Backend API is running' });
