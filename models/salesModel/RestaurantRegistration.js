@@ -24,9 +24,12 @@ const RestaurantRegistrationSchema = new mongoose.Schema({
 
   status: { 
     type: String, 
-    enum: ['pending', 'submitted', 'verified'], 
+    enum: ['pending', 'active', 'subscribed'], 
     default: 'pending' 
-  }
+  },
+
+  trialStartDate: Date,
+  subscriptionDate: Date
 }, { timestamps: true });
 
 module.exports = mongoose.model('RestaurantRegistration', RestaurantRegistrationSchema);

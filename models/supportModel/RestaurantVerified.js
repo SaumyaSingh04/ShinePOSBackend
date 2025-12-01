@@ -29,8 +29,8 @@ const RestaurantVerifiedSchema = new mongoose.Schema({
 
   status: { 
     type: String, 
-    enum: ['verified', 'approved', 'active', 'inactive', 'rejected'], 
-    default: 'verified' 
+    enum: ['subscribed', 'active', 'inactive', 'Pending'], 
+    default: 'Pending' 
   },
 
   verifiedBy: { type: String, required: true },
