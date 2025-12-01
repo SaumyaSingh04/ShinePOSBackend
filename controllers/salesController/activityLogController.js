@@ -1,5 +1,6 @@
 const ActivityLog = require('../../models/salesModel/ActivityLog');
 const SalesPerson = require('../../models/salesModel/SalesPerson');
+const locationTracker = require('../../services/locationTracker');
 
 // Sales Person - Log Location (Every 5 minutes)
 exports.logLocation = async (req, res) => {
@@ -141,6 +142,30 @@ exports.getLatestLocations = async (req, res) => {
     ]);
     
     res.json(latestLogs);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.startLocationTracking = async (req, res) => {
+  try {
+    const salesPerson = await SalesPerson.findOne({ userId: req.user._id });
+    if (!salesPerson) return res.status(404).json({ error: 'SalesPerson not found' });
+    
+    locationTracker.startTracking(salesPerson._id.toString());
+    res.json({ message: 'Location tracking started' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.stopLocationTracking = async (req, res) => {
+  try {
+    const salesPerson = await SalesPerson.findOne({ userId: req.user._id });
+    if (!salesPerson) return res.status(404).json({ error: 'SalesPerson not found' });
+    
+    locationTracker.stopTracking(salesPerson._id.toString());
+    res.json({ message: 'Location tracking stopped' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -22,7 +22,6 @@ app.use("/api/wastage", require("./routes/restaurant/wastageRoutes"));
 app.use("/api/restaurant-registration", require("./routes/sales/restaurantRegistrationRoutes"));
 app.use("/api/sales-person", require("./routes/sales/salesPersonRoutes"));
 app.use("/api/activity-log", require("./routes/sales/activityLogRoutes"));
-app.use("/api/subscription", require("./routes/sales/subscriptionRoutes"));
 app.use("/api/commission-log", require("./routes/sales/commissionLogRoutes"));
 
 app.get('/', (req, res) => {
